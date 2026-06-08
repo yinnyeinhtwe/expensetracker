@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { editMovie } from "../movieSlice";
+import { editMovie } from "../slices/movieSlice";
 
 export function MovieEdit({ movie }) {
     const [ isEdit, setIsEdit ] = useState(false);
@@ -22,6 +22,7 @@ export function MovieEdit({ movie }) {
             ) : 
             (
                 <div>
+
                     
                     <button onClick={() => setIsEdit(true)}>Edit</button>
                 </div>            

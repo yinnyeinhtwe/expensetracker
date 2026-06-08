@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { addMovie } from "../movieSlice";
+import { addMovie } from "../slices/movieSlice";
 import { useDispatch } from "react-redux";
 
 export function MovieInput() {

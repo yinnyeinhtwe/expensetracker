@@ -1,9 +1,10 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import {
-  addExpense,
-  deleteExpense,
-//   calculateTotalIncome,
+    addExpense,
+    deleteExpense,
+    //   calculateTotalIncome,
+    searchTransaction,
 } from "../slices/expenseSlice";
 import { ExpenseItem } from "./ExpenseItem";
 
@@ -42,6 +43,12 @@ import { ExpenseItem } from "./ExpenseItem";
     });
 
     const balance = income - expense;
+
+    const searchTerm = useSelector((state) => state.expense.searchTerm);
+
+    const filteredExpenses = expenses.filter((expense) => {
+        return expense.description.toLowerCase().includes(searchTerm.toLowerCase());
+    })
     
     const handleAddExpense = () => {
         dispatch(addExpense(newExpense));
@@ -56,13 +63,26 @@ import { ExpenseItem } from "./ExpenseItem";
         dispatch(deleteExpense(id));
     };
 
+    const handleSearch = (event) => {
+        dispatch(searchTransaction(event.target.value));
+    }
+
     return (
         <div className="max-w-6xl mx-auto p-6 bg-white rounded-xl my-8">
             {/* Title */}
             <h1 className="w-full text-2xl font-bold text-gray-800 mb-6 flex items-center justify-between gap-4">
                 {/* Left Side: Title */}
                 <div className="flex items-center gap-2">
-                <span>📋</span> Expense List
+                    <span>📋</span> Expense List
+                </div>
+
+                <div>
+                    <input
+                        placeholder="Search Transactions"
+                        onChange={handleSearch}
+                        className="px-4 py-2 w-[300px] border border-gray-300 rounded-lg focus:outline-none text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    />
+                    
                 </div>
 
                 {/* Right Side: Totals Group Container
@@ -147,50 +167,57 @@ import { ExpenseItem } from "./ExpenseItem";
                 Add Expense
             </button>
 
-            {/* Expense List */}
+            {/* Expense List */} 
             <div className="space-y-3">
-                {expenses.map((expense) => (
-                <div
-                    key={expense.id}
-                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:shadow-sm transition"
-                >
-                    <span className="font-medium text-gray-700">
-                    {expense.description}
-                    </span>
-
-                    {/* Dynamic Badge for Income vs Expense */}
-                    <div className="flex items-center gap-4">
-                    <span
-                        className={`text-sm font-semibold px-3 py-1 rounded-full ${
-                        expense.type === "income"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
-                    >
-                        {expense.type === "income" ? "+" : "-"}${expense.amount}
-                    </span>
-
-                    <ExpenseItem key={expense.id} expense={expense} />
-
-                    <span>
-                        <button
-                        onClick={() => handleDeleteExpense(expense.id)}
-                        className="text-red-500 hover:text-red-700"
-                        >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            className="bi bi-trash-fill"
-                            viewBox="0 0 16 16"
-                        >
-                            <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0" />
-                        </svg>
-                        </button>
-                    </span>
+                {filteredExpenses.length === 0 ? (
+                    <div className="text-center text-gray-500 py-10">
+                        No transactions found.
                     </div>
-                </div>
+                ) : (
+                    filteredExpenses.map((expense) => (
+                    <div
+                        key={expense.id}
+                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:shadow-sm transition"
+                    >
+                        <span className="font-medium text-gray-700">
+                        {expense.description}
+                        </span>
+
+                        {/* Dynamic Badge for Income vs Expense */}
+                        <div className="flex items-center gap-4">
+                        <span
+                            className={`text-sm font-semibold px-3 py-1 rounded-full ${
+                            expense.type === "income"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-red-100 text-red-800"
+                            }`}
+                        >
+                            {expense.type === "income" ? "+" : "-"}${expense.amount}
+                        </span>
+
+                        <ExpenseItem key={expense.id} expense={expense} />
+
+                        <span>
+                            <button
+                            onClick={() => handleDeleteExpense(expense.id)}
+                            className="text-red-500 hover:text-red-700"
+                            >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-trash-fill"
+                                viewBox="0 0 16 16"
+                            >
+                                <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0" />
+                            </svg>
+                            </button>
+                        </span>
+                        </div>
+                    </div>
+                )
+                    
                 ))}
             </div>
         </div>

@@ -7,6 +7,7 @@ const expenseSlice = createSlice({
     initialState: {
         expenses: saveExpenses? JSON.parse(saveExpenses): [{id: 1, description: "Salary", amount: 1000, type: "income"}, {id: 2, description: "Rent", amount: 500, type: "expense"}],
         // totalIncome: 0,
+        searchTerm: "",
     },
     reducers: {
         addExpense: (state, action) => {
@@ -44,8 +45,12 @@ const expenseSlice = createSlice({
         //     // return totalIncome;
         //  },
 
+        searchTransaction: (state, action) => {
+            state.searchTerm = action.payload;
+        }
+ 
     }
 });
 
-export const { addExpense, deleteExpense, editExpense, calculateTotalIncome } = expenseSlice.actions;
+export const { addExpense, deleteExpense, editExpense, calculateTotalIncome, searchTransaction } = expenseSlice.actions;
 export default expenseSlice.reducer;

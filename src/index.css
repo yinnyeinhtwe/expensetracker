@@ -1,0 +1,4 @@
+@import "tailwindcss";
+
+/* This replaces the old "content" array from tailwind.config.js */
+@source "./**/*.{js,jsx,ts,tsx}";

@@ -57,7 +57,7 @@ import { ExpenseItem } from "./ExpenseItem";
     };
 
     return (
-        <div className="max-w-4xl mx-auto p-6 bg-white rounded-xl shadow-md border border-gray-100 my-8">
+        <div className="max-w-6xl mx-auto p-6 bg-white rounded-xl my-8">
             {/* Title */}
             <h1 className="w-full text-2xl font-bold text-gray-800 mb-6 flex items-center justify-between gap-4">
                 {/* Left Side: Title */}
@@ -65,20 +65,45 @@ import { ExpenseItem } from "./ExpenseItem";
                 <span>📋</span> Expense List
                 </div>
 
-                {/* Right Side: Totals Group Container */}
+                {/* Right Side: Totals Group Container
                 <div className="flex items-center gap-3">
-                <span className="p-2 bg-green-100 text-base md:text-lg text-green-800 rounded-lg font-semibold whitespace-nowrap">
-                    Total Income: ${income}
-                </span>
-                <span className="p-2 bg-red-100 text-base md:text-lg text-red-800 rounded-lg font-semibold whitespace-nowrap">
-                    Total Expense: ${expense}
-                </span>
-                </div>
+                    <span className="p-2 bg-green-100 text-base md:text-lg text-green-800 rounded-lg font-semibold whitespace-nowrap">
+                        Total Income: ${income}
+                    </span>
+                    <span className="p-2 bg-red-100 text-base md:text-lg text-red-800 rounded-lg font-semibold whitespace-nowrap">
+                        Total Expense: ${expense}
+                    </span>
+                </div> */}
             </h1>
 
-            <div className="w-[360px] p-2 mb-4 ml-auto bg-blue-600 text-base text-center md:text-lg text-white rounded-lg font-semibold whitespace-nowrap">
-                Balance: ${balance >= 0 ? balance : 0}
+            <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-4 gap-5 bg-white rounded-xl my-8">
+                <div className="w-[250px] h-[100px] p-2 bg-white text-base md:text-lg text-gray-500 border border-white shadow shadow-lg rounded-lg font-semibold whitespace-nowrap">
+                    Total Balance
+                    <div className="text-2xl mt-3 text-blue-500 font-bold">
+                        ${balance}
+                    </div>
+                </div>
+                <div className="w-[250px] h-[100px] p-2 bg-white text-base md:text-lg text-gray-500 border border-white shadow shadow-lg rounded-lg font-semibold whitespace-nowrap">
+                    Total Income
+                    <div className="text-2xl mt-3 text-green-500 font-bold">
+                        ${income}
+                    </div>
+                </div>
+                <div className="w-[250px] h-[100px] p-2 bg-white text-base md:text-lg text-gray-500 border border-white shadow shadow-lg rounded-lg font-semibold whitespace-nowrap">
+                    Total Expense
+                    <div className="text-2xl mt-3 text-red-500 font-bold">
+                        ${expense}
+                    </div>
+                </div>
+                <div className="w-[250px] h-[100px] p-2 bg-white text-base md:text-lg text-gray-500 border border-white shadow shadow-lg rounded-lg font-semibold whitespace-nowrap">
+                    Total Expense
+                    <div className="text-2xl mt-3 text-red-500 font-bold">
+                        ${expense}
+                    </div>
+                </div>
             </div>
+
+            
 
             {/* Form Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">

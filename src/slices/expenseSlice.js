@@ -5,7 +5,7 @@ const saveExpenses = localStorage.getItem("expenses");
 const expenseSlice = createSlice({
     name: "expense",
     initialState: {
-        expenses: saveExpenses? JSON.parse(saveExpenses): [{id: 1, description: "Salary", amount: 1000, type: "income"}, {id: 2, description: "Rent", amount: 500, type: "expense"}],
+        expenses: saveExpenses? JSON.parse(saveExpenses): [{id: 1, description: "Salary", amount: 1000, type: "income", date: new Date().toLocaleDateString()}, {id: 2, description: "Rent", amount: 500, type: "expense", date: new Date().toLocaleDateString()}],
         // totalIncome: 0,
         searchTerm: "",
     },
@@ -16,6 +16,7 @@ const expenseSlice = createSlice({
                 description: action.payload.description,
                 amount: action.payload.amount,
                 type: action.payload.type,
+                date: new Date().toLocaleDateString(),
             };
             state.expenses.push(newExpense);
         },

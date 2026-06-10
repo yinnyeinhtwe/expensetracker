@@ -11,7 +11,7 @@ import { ExpenseItem } from "./ExpenseItem";
     export function ExpenseList() {
     const [newExpense, setNewExpense] = useState({
         description: "",
-        amount: 0,
+        amount: "",
         type: "expense",
     });
 
@@ -51,10 +51,20 @@ import { ExpenseItem } from "./ExpenseItem";
     })
     
     const handleAddExpense = () => {
-        dispatch(addExpense(newExpense));
+        if (!newExpense.description || newExpense.amount === "") {
+            alert("Please enter a description and amount.");
+            return;
+        }
+
+        dispatch(addExpense({
+            ...newExpense,
+            id: Date.now(), // Generates a unique ID if your slice doesn't do it automatically
+            amount: Number(newExpense.amount), // Safe math conversion
+            date: new Date().toLocaleDateString() // Adds the current system date automatically
+        }));
         setNewExpense({
         description: "",
-        amount: 0,
+        amount: "",
         type: "expense",
         });
     };
@@ -70,54 +80,46 @@ import { ExpenseItem } from "./ExpenseItem";
     return (
         <div className="max-w-6xl mx-auto p-6 bg-white rounded-xl my-8">
             {/* Title */}
-            <h1 className="w-full text-2xl font-bold text-gray-800 mb-6 flex items-center justify-between gap-4">
-                {/* Left Side: Title */}
-                <div className="flex items-center gap-2">
-                    <span>📋</span> Expense List
+            <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4" data-purpose="header">
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-blue-700 p-2.5 rounded-xl shadow-lg shadow-blue-200">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h1 class="text-4xl font-bold tracking-tight text-slate-800">
+                            Expense <span class="text-blue-700">List</span>
+                            </h1>
+                            <p class="text-sm font-medium text-slate-400 uppercase tracking-widest">Financial Overview</p>
+                        </div>
+                    </div>
                 </div>
+            </header>
 
-                <div>
-                    <input
-                        placeholder="Search Transactions"
-                        onChange={handleSearch}
-                        className="px-4 py-2 w-[300px] border border-gray-300 rounded-lg focus:outline-none text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                    />
-                    
-                </div>
-
-                {/* Right Side: Totals Group Container
-                <div className="flex items-center gap-3">
-                    <span className="p-2 bg-green-100 text-base md:text-lg text-green-800 rounded-lg font-semibold whitespace-nowrap">
-                        Total Income: ${income}
-                    </span>
-                    <span className="p-2 bg-red-100 text-base md:text-lg text-red-800 rounded-lg font-semibold whitespace-nowrap">
-                        Total Expense: ${expense}
-                    </span>
-                </div> */}
-            </h1>
-
-            <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-4 gap-5 bg-white rounded-xl my-8">
-                <div className="w-[250px] h-[100px] p-2 bg-white text-base md:text-lg text-gray-500 border border-white shadow shadow-lg rounded-lg font-semibold whitespace-nowrap">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-4 gap-5 bg-white rounded-xl my-8 mt-10">
+                <div className="w-[250px] h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 shadow shadow-lg rounded-lg font-semibold whitespace-nowrap">
                     Total Balance
-                    <div className="text-2xl mt-3 text-blue-500 font-bold">
+                    <div className="text-2xl mt-2 text-blue-500 font-bold">
                         ${balance}
                     </div>
                 </div>
-                <div className="w-[250px] h-[100px] p-2 bg-white text-base md:text-lg text-gray-500 border border-white shadow shadow-lg rounded-lg font-semibold whitespace-nowrap">
+                <div className="w-[250px] h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 shadow shadow-lg rounded-lg font-semibold whitespace-nowrap">
                     Total Income
-                    <div className="text-2xl mt-3 text-green-500 font-bold">
+                    <div className="text-2xl mt-2 text-green-500 font-bold">
                         ${income}
                     </div>
                 </div>
-                <div className="w-[250px] h-[100px] p-2 bg-white text-base md:text-lg text-gray-500 border border-white shadow shadow-lg rounded-lg font-semibold whitespace-nowrap">
+                <div className="w-[250px] h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 shadow shadow-lg rounded-lg font-semibold whitespace-nowrap">
                     Total Expense
-                    <div className="text-2xl mt-3 text-red-500 font-bold">
+                    <div className="text-2xl mt-2 text-red-500 font-bold">
                         ${expense}
                     </div>
                 </div>
-                <div className="w-[250px] h-[100px] p-2 bg-white text-base md:text-lg text-gray-500 border border-white shadow shadow-lg rounded-lg font-semibold whitespace-nowrap">
+                <div className="w-[250px] h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 shadow shadow-lg rounded-lg font-semibold whitespace-nowrap">
                     Total Expense
-                    <div className="text-2xl mt-3 text-red-500 font-bold">
+                    <div className="text-2xl mt-2 text-red-500 font-bold">
                         ${expense}
                     </div>
                 </div>
@@ -126,100 +128,162 @@ import { ExpenseItem } from "./ExpenseItem";
             
 
             {/* Form Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
-                <input
-                type="text"
-                placeholder="Description"
-                onChange={(e) =>
-                    setNewExpense({ ...newExpense, description: e.target.value })
-                }
-                value={newExpense.description}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                />
+            <div className="max-w-7xl mx-auto bg-white rounded-xl p-6 mb-8 border border-gray-200 shadow-sm mt-15">
+                <div className="text-2xl font-bold text-gray-800 mb-6">
+                    Add New Transaction
+                </div>
 
-                <input
-                type="number"
-                placeholder="Amount"
-                onChange={(e) =>
-                    setNewExpense({ ...newExpense, amount: Number(e.target.value) })
-                }
-                value={newExpense.amount}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                />
+                {/* Form Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
+                    {/* Description Field Group */}
+                    <div className="flex flex-col gap-1.5">
+                        <label className="text-lg font-semibold text-gray-500 mb-2">Description</label>
+                        <input
+                            type="text"
+                            placeholder="e.g., Grocery Shopping"
+                            onChange={(e) =>
+                                setNewExpense({ ...newExpense, description: e.target.value })
+                            }
+                            value={newExpense.description}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-sm"
+                        />
+                    </div>
 
-                <select
-                onChange={(e) =>
-                    setNewExpense({ ...newExpense, type: e.target.value })
-                }
-                value={newExpense.type}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    {/* Amount Field Group */}
+                    <div className="flex flex-col gap-1.5">
+                        <label className="text-lg font-semibold text-gray-500 mb-2">Amount</label>
+                        <input
+                            type="number"
+                            placeholder="0.00"
+                            onChange={(e) =>
+                                setNewExpense({ ...newExpense, amount: e.target.value })
+                            }
+                            value={newExpense.amount}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        />
+                    </div>
+
+                    {/* Type Field Group */}
+                    <div className="flex flex-col gap-1.5">
+                        <label className="text-lg font-semibold text-gray-500 mb-2">Type</label>
+                        <select
+                            onChange={(e) =>
+                                setNewExpense({ ...newExpense, type: e.target.value })
+                            }
+                            value={newExpense.type}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-sm"
+                        >
+                            <option value="expense">Expense</option>
+                            <option value="income">Income</option>
+                        </select>
+                    </div>
+                </div>
+
+
+                {/* Add Button */}
+                <button
+                    onClick={handleAddExpense}
+                    className="w-[200px] ml-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-2 rounded-full transition duration-200 shadow-sm mb-4 flex items-center justify-center gap-2"
                 >
-                <option value="expense">Expense</option>
-                <option value="income">Income</option>
-                </select>
+                    + Add Transaction
+                </button>
+            </div>
+            
+
+            {/* Expense List Table */} 
+            <div className="flex items-center gap-2 text-2xl font-bold text-gray-800 mb-6 mt-15">
+                Recent Transactions
+                <input
+                    placeholder="Search Transactions"
+                    onChange={handleSearch}
+                    className="px-4 py-2 w-[300px] ml-auto border border-gray-300 rounded-lg focus:outline-none text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                />
             </div>
 
-            {/* Add Button */}
-            <button
-                onClick={handleAddExpense}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition duration-200 shadow-sm mb-8"
-            >
-                Add Expense
-            </button>
-
-            {/* Expense List */} 
-            <div className="space-y-3">
+            <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
                 {filteredExpenses.length === 0 ? (
-                    <div className="text-center text-gray-500 py-10">
+                    <div className="text-center text-gray-500 py-10 bg-gray-50">
                         No transactions found.
                     </div>
                 ) : (
-                    filteredExpenses.map((expense) => (
-                    <div
-                        key={expense.id}
-                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:shadow-sm transition"
-                    >
-                        <span className="font-medium text-gray-700">
-                        {expense.description}
-                        </span>
+                    <table className="w-full text-left border-collapse bg-white text-sm text-gray-500">
+                        {/* Table Header */}
+                        <thead className="bg-gray-100 text-sm font-semibold uppercase text-blue-700">
+                            <tr>
+                                <th scope="col" className="px-6 py-4">Date</th>
+                                <th scope="col" className="px-6 py-4">Description</th>
+                                <th scope="col" className="px-6 py-4">Type</th>
+                                <th scope="col" className="px-6 py-4">Amount</th>
+                                <th scope="col" className="px-6 py-4 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        
+                        {/* Table Body */}
+                        <tbody className="divide-y divide-gray-200 border-t border-gray-200">
+                            {filteredExpenses.map((expense) => (
+                                <tr key={expense.id} className="hover:bg-gray-50 transition-colors">
+                                    {/* 1. Date (Uses a fallback if date doesn't exist yet) */}
+                                    <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-600">
+                                        {expense.date || new Date().toLocaleDateString()}
+                                    </td>
 
-                        {/* Dynamic Badge for Income vs Expense */}
-                        <div className="flex items-center gap-4">
-                        <span
-                            className={`text-sm font-semibold px-3 py-1 rounded-full ${
-                            expense.type === "income"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-red-100 text-red-800"
-                            }`}
-                        >
-                            {expense.type === "income" ? "+" : "-"}${expense.amount}
-                        </span>
+                                    {/* 2. Description */}
+                                    <td className="px-6 py-4 font-medium text-gray-900">
+                                        {expense.description}
+                                    </td>
 
-                        <ExpenseItem key={expense.id} expense={expense} />
+                                    {/* 3. Type (Income vs Expense Badge) */}
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <span
+                                            className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider ${
+                                                expense.type === "income"
+                                                    ? "bg-green-100 text-green-800"
+                                                    : "bg-red-100 text-red-800"
+                                            }`}
+                                        >
+                                            {expense.type}
+                                        </span>
+                                    </td>
 
-                        <span>
-                            <button
-                            onClick={() => handleDeleteExpense(expense.id)}
-                            className="text-red-500 hover:text-red-700"
-                            >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-trash-fill"
-                                viewBox="0 0 16 16"
-                            >
-                                <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0" />
-                            </svg>
-                            </button>
-                        </span>
-                        </div>
-                    </div>
-                )
-                    
-                ))}
+                                    {/* 4. Amount */}
+                                    <td className={`px-6 py-4 whitespace-nowrap font-semibold ${
+                                        expense.type === "income" ? "text-green-600" : "text-red-600"
+                                    }`}>
+                                        {expense.type === "income" ? "+" : "-"}${expense.amount}
+                                    </td>
+
+                                    {/* 5. Action (Edit & Delete Buttons aligned horizontally) */}
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="flex items-center justify-center gap-4">
+                                            {/* Edit Button Container */}
+                                            <ExpenseItem expense={expense} />
+
+                                            {/* Delete Button */}
+                                            <button
+                                                onClick={() => handleDeleteExpense(expense.id)}
+                                                className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition"
+                                                title="Delete Transaction"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    width="18"
+                                                    height="18"
+                                                    fill="currentColor"
+                                                    className="bi bi-trash-fill"
+                                                    viewBox="0 0 16 16"
+                                                >
+                                                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
             </div>
+
         </div>
     );
 }

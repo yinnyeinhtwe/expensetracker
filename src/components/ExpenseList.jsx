@@ -15,7 +15,10 @@ import { ExpenseItem } from "./ExpenseItem";
         type: "expense",
     });
 
-    const [activeFilter, setActiveFilter] = useState("all");
+    const [activeFilter, setActiveFilter] = useState(() => {
+        const savedFilter = localStorage.getItem("activeFilter");
+        return savedFilter || "all"; 
+    });
 
     const dispatch = useDispatch();
     const expenses = useSelector((state) => state.expense.expenses);
@@ -27,6 +30,10 @@ import { ExpenseItem } from "./ExpenseItem";
     useEffect(() => {
         localStorage.setItem("expenses", JSON.stringify(expenses));
     }, [expenses]);
+
+    useEffect(() => {
+        localStorage.setItem("activeFilter", activeFilter);
+    }, [activeFilter]);
 
 //   const income = useSelector((state) => state.expense.totalIncome);
 
@@ -105,34 +112,35 @@ import { ExpenseItem } from "./ExpenseItem";
                 </div>
             </header>
 
-            <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-4 gap-5 bg-white rounded-xl my-8 mt-10">
-                <div className="w-[250px] h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 shadow shadow-lg rounded-lg font-semibold whitespace-nowrap">
-                    Total Balance
-                    <div className="text-2xl mt-2 text-blue-500 font-bold">
-                        ${balance}
-                    </div>
-                </div>
-                <div className="w-[250px] h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 shadow shadow-lg rounded-lg font-semibold whitespace-nowrap">
-                    Total Income
-                    <div className="text-2xl mt-2 text-green-500 font-bold">
-                        ${income}
-                    </div>
-                </div>
-                <div className="w-[250px] h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 shadow shadow-lg rounded-lg font-semibold whitespace-nowrap">
-                    Total Expense
-                    <div className="text-2xl mt-2 text-red-500 font-bold">
-                        ${expense}
-                    </div>
-                </div>
-                <div className="w-[250px] h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 shadow shadow-lg rounded-lg font-semibold whitespace-nowrap">
-                    Total Expense
-                    <div className="text-2xl mt-2 text-red-500 font-bold">
-                        ${expense}
-                    </div>
+            <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 my-8 mt-10">
+            <div className="w-full min-h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 shadow-lg rounded-lg font-semibold">
+                Total Balance
+                <div className="text-xl sm:text-2xl mt-2 text-blue-500 font-bold">
+                ${balance}
                 </div>
             </div>
 
-            
+            <div className="w-full min-h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 shadow-lg rounded-lg font-semibold">
+                Total Income
+                <div className="text-xl sm:text-2xl mt-2 text-green-500 font-bold">
+                ${income}
+                </div>
+            </div>
+
+            <div className="w-full min-h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 shadow-lg rounded-lg font-semibold">
+                Total Expense
+                <div className="text-xl sm:text-2xl mt-2 text-red-500 font-bold">
+                ${expense}
+                </div>
+            </div>
+
+            <div className="w-full min-h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 shadow-lg rounded-lg font-semibold">
+                Total Expense
+                <div className="text-xl sm:text-2xl mt-2 text-red-500 font-bold">
+                ${expense}
+                </div>
+            </div>
+            </div>
 
             {/* Form Grid */}
             <div className="max-w-7xl mx-auto bg-white rounded-xl p-6 mb-8 border border-gray-200 shadow-sm mt-15">

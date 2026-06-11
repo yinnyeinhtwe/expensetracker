@@ -15,6 +15,8 @@ import { ExpenseItem } from "./ExpenseItem";
         type: "expense",
     });
 
+    const [activeFilter, setActiveFilter] = useState("all");
+
     const dispatch = useDispatch();
     const expenses = useSelector((state) => state.expense.expenses);
 
@@ -47,7 +49,12 @@ import { ExpenseItem } from "./ExpenseItem";
     const searchTerm = useSelector((state) => state.expense.searchTerm);
 
     const filteredExpenses = expenses.filter((expense) => {
-        return expense.description.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = expense.description.toLowerCase().includes(searchTerm.toLowerCase());
+
+        const matchesFilter = activeFilter === "all" || expense.type === activeFilter;
+
+        return matchesFilter && matchesSearch;
+
     })
     
     const handleAddExpense = () => {
@@ -57,15 +64,15 @@ import { ExpenseItem } from "./ExpenseItem";
         }
 
         dispatch(addExpense({
-            ...newExpense,
-            id: Date.now(), // Generates a unique ID if your slice doesn't do it automatically
-            amount: Number(newExpense.amount), // Safe math conversion
-            date: new Date().toLocaleDateString() // Adds the current system date automatically
+            description: newExpense.description,
+            amount: Number(newExpense.amount),
+            type: newExpense.type,
+            date: new Date().toLocaleDateString(),
         }));
-        setNewExpense({
-        description: "",
-        amount: "",
-        type: "expense",
+            setNewExpense({
+            description: "",
+            amount: "",
+            type: "expense",
         });
     };
 
@@ -200,6 +207,43 @@ import { ExpenseItem } from "./ExpenseItem";
                 />
             </div>
 
+            {/* Filter Buttons */}
+            <div className="flex gap-2 mb-6">
+                <button
+                    onClick={() => setActiveFilter("all")}
+                    className={`px-4 py-2 text-sm font-medium rounded-full transition ${
+                        activeFilter === "all"
+                            ? "bg-blue-600 text-white shadow-sm"
+                            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
+                >
+                    All
+                </button>
+                
+                <button
+                    onClick={() => setActiveFilter("income")}
+                    className={`px-4 py-2 text-sm font-medium rounded-full transition ${
+                        activeFilter === "income"
+                            ? "bg-green-600 text-white shadow-sm"
+                            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
+                >
+                    Income
+                </button>
+                
+                <button
+                    onClick={() => setActiveFilter("expense")}
+                    className={`px-4 py-2 text-sm font-medium rounded-full transition ${
+                        activeFilter === "expense"
+                            ? "bg-red-600 text-white shadow-sm"
+                            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    }`}
+                >
+                    Expense
+                </button>
+            </div>
+
+
             <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
                 {filteredExpenses.length === 0 ? (
                     <div className="text-center text-gray-500 py-10 bg-gray-50">
@@ -261,7 +305,7 @@ import { ExpenseItem } from "./ExpenseItem";
                                             {/* Delete Button */}
                                             <button
                                                 onClick={() => handleDeleteExpense(expense.id)}
-                                                className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition"
+                                                className="text-red-500 p-1 rounded  transition"
                                                 title="Delete Transaction"
                                             >
                                                 <svg

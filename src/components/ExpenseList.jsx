@@ -73,23 +73,37 @@ export function ExpenseList() {
             // 1. Generate the last 6 months dynamically relative to today
             const chartMap = Array.from({ length: 6 }, (_, i) => {
                 const d = new Date(current.getFullYear(), current.getMonth() - (5 - i), 1);
-                return { name: monthNames[d.getMonth()], monthIndex: d.getMonth(), year: d.getFullYear(), amount: 0 };
+                return {
+                    name: monthNames[d.getMonth()],
+                    monthIndex: d.getMonth(),
+                    year: d.getFullYear(),
+                    income: 0, //track income
+                    expense: 0 //track expense
+                };
             });
-
-            // 2. Loop through your ledger list and add values to the matching timeline bucket
+            console.log('CHART MAP', chartMap)
+            // 2. Process all entries into their respective buckets
             expenses.forEach(item => {
-                if (item.type === 'expense' && item.date) {
+                if (item.date) {
                     const expenseDate = new Date(item.date);
                     const match = chartMap.find(m => m.monthIndex === expenseDate.getMonth() && m.year === expenseDate.getFullYear());
-                    if (match) match.amount += Number(item.amount || 0);
+                    
+                    if (match) {
+                        // Dynamically route the addition based on type
+                        if (item.type === 'expense') {
+                            match.expense += Number(item.amount || 0);
+                        } else if (item.type === 'income') {
+                            match.income += Number(item.amount || 0);
+                        }
+                    }
                 }
             });
 
             // 3. Clean up the internal calendar markers before sending the array to Recharts
-            return chartMap.map(({ name, amount }) => ({ name, amount }));
+            return chartMap.map(({ name, expense, income }) => ({ name, expense, income }));
         }, [expenses]);
 
-    
+    console.log("cadata",chartData);
     const handleAddExpense = () => {
         if (!newExpense.description || newExpense.amount === "") {
             alert("Please enter a description and amount.");
@@ -146,28 +160,28 @@ export function ExpenseList() {
             </header>
 
             <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 my-8 mt-10">
-                <div className="w-full min-h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 shadow-lg rounded-lg font-semibold">
+                <div className="w-full min-h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 border-t-3 border-t-blue-500 shadow-lg rounded-lg font-semibold">
                     Total Balance
                     <div className="text-xl sm:text-2xl mt-2 text-blue-500 font-bold">
                     ${balance}
                     </div>
                 </div>
 
-                <div className="w-full min-h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 shadow-lg rounded-lg font-semibold">
+                <div className="w-full min-h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 border-t-3 border-t-green-500 shadow-lg rounded-lg font-semibold">
                     Total Income
                     <div className="text-xl sm:text-2xl mt-2 text-green-500 font-bold">
                     ${income}
                     </div>
                 </div>
 
-                <div className="w-full min-h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 shadow-lg rounded-lg font-semibold">
+                <div className="w-full min-h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 border-t-3 border-t-red-500 shadow-lg rounded-lg font-semibold">
                     Total Expense
                     <div className="text-xl sm:text-2xl mt-2 text-red-500 font-bold">
                     ${expense}
                     </div>
                 </div>
 
-                <div className="w-full min-h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 shadow-lg rounded-lg font-semibold">
+                <div className="w-full min-h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 border-t-3 border-t-red-500 shadow-lg rounded-lg font-semibold">
                     Total Expense
                     <div className="text-xl sm:text-2xl mt-2 text-red-500 font-bold">
                     ${expense}

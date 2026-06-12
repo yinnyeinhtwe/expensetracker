@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
     addExpense,
     deleteExpense,
@@ -7,21 +7,24 @@ import {
     searchTransaction,
 } from "../slices/expenseSlice";
 import { ExpenseItem } from "./ExpenseItem";
+import MonthlySpendingChart from './MonthlySpendingChart';
 
-    export function ExpenseList() {
+export function ExpenseList() {
+
+    const dispatch = useDispatch();
+    const expenses = useSelector((state) => state.expense.expenses);
+
     const [newExpense, setNewExpense] = useState({
         description: "",
         amount: "",
         type: "expense",
+        category: "",
     });
 
     const [activeFilter, setActiveFilter] = useState(() => {
         const savedFilter = localStorage.getItem("activeFilter");
         return savedFilter || "all"; 
     });
-
-    const dispatch = useDispatch();
-    const expenses = useSelector((state) => state.expense.expenses);
 
 //   const handleCalculateTotalIncome = () => {
 //     dispatch(calculateTotalIncome());
@@ -31,9 +34,6 @@ import { ExpenseItem } from "./ExpenseItem";
         localStorage.setItem("expenses", JSON.stringify(expenses));
     }, [expenses]);
 
-    useEffect(() => {
-        localStorage.setItem("activeFilter", activeFilter);
-    }, [activeFilter]);
 
 //   const income = useSelector((state) => state.expense.totalIncome);
 
@@ -63,6 +63,32 @@ import { ExpenseItem } from "./ExpenseItem";
         return matchesFilter && matchesSearch;
 
     })
+
+        // 1. SIMPLEST WAY TO GENERATE CHART DATA
+        // This will automatically adjust to show the last 6 months based on the current date
+        const chartData = useMemo(() => {
+            const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+            const current = new Date();
+            
+            // 1. Generate the last 6 months dynamically relative to today
+            const chartMap = Array.from({ length: 6 }, (_, i) => {
+                const d = new Date(current.getFullYear(), current.getMonth() - (5 - i), 1);
+                return { name: monthNames[d.getMonth()], monthIndex: d.getMonth(), year: d.getFullYear(), amount: 0 };
+            });
+
+            // 2. Loop through your ledger list and add values to the matching timeline bucket
+            expenses.forEach(item => {
+                if (item.type === 'expense' && item.date) {
+                    const expenseDate = new Date(item.date);
+                    const match = chartMap.find(m => m.monthIndex === expenseDate.getMonth() && m.year === expenseDate.getFullYear());
+                    if (match) match.amount += Number(item.amount || 0);
+                }
+            });
+
+            // 3. Clean up the internal calendar markers before sending the array to Recharts
+            return chartMap.map(({ name, amount }) => ({ name, amount }));
+        }, [expenses]);
+
     
     const handleAddExpense = () => {
         if (!newExpense.description || newExpense.amount === "") {
@@ -75,11 +101,13 @@ import { ExpenseItem } from "./ExpenseItem";
             amount: Number(newExpense.amount),
             type: newExpense.type,
             date: new Date().toLocaleDateString(),
+            category: newExpense.category,
         }));
             setNewExpense({
             description: "",
             amount: "",
             type: "expense",
+            category: "",
         });
     };
 
@@ -89,6 +117,11 @@ import { ExpenseItem } from "./ExpenseItem";
 
     const handleSearch = (event) => {
         dispatch(searchTransaction(event.target.value));
+    }
+
+    function filterButton (option) {
+        setActiveFilter(option);
+        localStorage.setItem("activeFilter", option);
     }
 
     return (
@@ -113,43 +146,54 @@ import { ExpenseItem } from "./ExpenseItem";
             </header>
 
             <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 my-8 mt-10">
-            <div className="w-full min-h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 shadow-lg rounded-lg font-semibold">
-                Total Balance
-                <div className="text-xl sm:text-2xl mt-2 text-blue-500 font-bold">
-                ${balance}
+                <div className="w-full min-h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 shadow-lg rounded-lg font-semibold">
+                    Total Balance
+                    <div className="text-xl sm:text-2xl mt-2 text-blue-500 font-bold">
+                    ${balance}
+                    </div>
+                </div>
+
+                <div className="w-full min-h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 shadow-lg rounded-lg font-semibold">
+                    Total Income
+                    <div className="text-xl sm:text-2xl mt-2 text-green-500 font-bold">
+                    ${income}
+                    </div>
+                </div>
+
+                <div className="w-full min-h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 shadow-lg rounded-lg font-semibold">
+                    Total Expense
+                    <div className="text-xl sm:text-2xl mt-2 text-red-500 font-bold">
+                    ${expense}
+                    </div>
+                </div>
+
+                <div className="w-full min-h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 shadow-lg rounded-lg font-semibold">
+                    Total Expense
+                    <div className="text-xl sm:text-2xl mt-2 text-red-500 font-bold">
+                    ${expense}
+                    </div>
                 </div>
             </div>
 
-            <div className="w-full min-h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 shadow-lg rounded-lg font-semibold">
-                Total Income
-                <div className="text-xl sm:text-2xl mt-2 text-green-500 font-bold">
-                ${income}
-                </div>
-            </div>
+            <MonthlySpendingChart data={chartData} />
 
-            <div className="w-full min-h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 shadow-lg rounded-lg font-semibold">
-                Total Expense
-                <div className="text-xl sm:text-2xl mt-2 text-red-500 font-bold">
-                ${expense}
-                </div>
-            </div>
-
-            <div className="w-full min-h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 shadow-lg rounded-lg font-semibold">
-                Total Expense
-                <div className="text-xl sm:text-2xl mt-2 text-red-500 font-bold">
-                ${expense}
-                </div>
-            </div>
-            </div>
+            {
+                balance < 0 && (
+                    <p className="text-red-600 font-medium text-sm mt-2 animate-pulse">
+                        ⚠️ Warning: Your balance is negative! You are overspending.
+                    </p>
+                )
+            }
 
             {/* Form Grid */}
-            <div className="max-w-7xl mx-auto bg-white rounded-xl p-6 mb-8 border border-gray-200 shadow-sm mt-15">
-                <div className="text-2xl font-bold text-gray-800 mb-6">
-                    Add New Transaction
+            <div className="max-w-7xl mx-auto bg-white rounded-xl p-6 mb-8 border border-gray-200 shadow-sm mt-10">
+                <div className="flex items-center gap-2 mb-8">
+                    <div className="w-1 h-5 bg-blue-600 rounded-full"></div>
+                    <h3 className="text-xl font-bold text-gray-800">Add New Transaction</h3>
                 </div>
 
                 {/* Form Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-5 mb-6">
                     {/* Description Field Group */}
                     <div className="flex flex-col gap-1.5">
                         <label className="text-lg font-semibold text-gray-500 mb-2">Description</label>
@@ -192,6 +236,28 @@ import { ExpenseItem } from "./ExpenseItem";
                             <option value="income">Income</option>
                         </select>
                     </div>
+
+                    {/* Category Field Group */}
+                    <div className="flex flex-col gap-1.5">
+                        <label className="text-lg font-semibold text-gray-500 mb-2">Category</label>
+                        <select
+                            onChange={(e) =>
+                                setNewExpense({ ...newExpense, category: e.target.value })
+                            }
+                            value={newExpense.category}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-sm"
+                        >
+                            <option value="" disabled>Select Category</option>
+                            <option value="food">Food</option>
+                            <option value="bills">Bills</option>
+                            <option value="entertainment">Entertainment</option>
+                            <option value="salary">Salary</option>
+                            <option value="shopping">Shopping</option>
+                            <option value="transport">Transport</option>
+                            <option value="utilities">Utilities</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
                 </div>
 
 
@@ -218,7 +284,7 @@ import { ExpenseItem } from "./ExpenseItem";
             {/* Filter Buttons */}
             <div className="flex gap-2 mb-6">
                 <button
-                    onClick={() => setActiveFilter("all")}
+                    onClick={() => filterButton("all")}
                     className={`px-4 py-2 text-sm font-medium rounded-full transition ${
                         activeFilter === "all"
                             ? "bg-blue-600 text-white shadow-sm"
@@ -229,7 +295,7 @@ import { ExpenseItem } from "./ExpenseItem";
                 </button>
                 
                 <button
-                    onClick={() => setActiveFilter("income")}
+                    onClick={() => filterButton("income")}
                     className={`px-4 py-2 text-sm font-medium rounded-full transition ${
                         activeFilter === "income"
                             ? "bg-green-600 text-white shadow-sm"
@@ -240,7 +306,7 @@ import { ExpenseItem } from "./ExpenseItem";
                 </button>
                 
                 <button
-                    onClick={() => setActiveFilter("expense")}
+                    onClick={() => filterButton("expense")}
                     className={`px-4 py-2 text-sm font-medium rounded-full transition ${
                         activeFilter === "expense"
                             ? "bg-red-600 text-white shadow-sm"
@@ -264,6 +330,7 @@ import { ExpenseItem } from "./ExpenseItem";
                             <tr>
                                 <th scope="col" className="px-6 py-4">Date</th>
                                 <th scope="col" className="px-6 py-4">Description</th>
+                                <th scope="col" className="px-6 py-4">Category</th>
                                 <th scope="col" className="px-6 py-4">Type</th>
                                 <th scope="col" className="px-6 py-4">Amount</th>
                                 <th scope="col" className="px-6 py-4 text-center">Action</th>
@@ -276,12 +343,29 @@ import { ExpenseItem } from "./ExpenseItem";
                                 <tr key={expense.id} className="hover:bg-gray-50 transition-colors">
                                     {/* 1. Date (Uses a fallback if date doesn't exist yet) */}
                                     <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-600">
-                                        {expense.date || new Date().toLocaleDateString()}
+                                        {(() => {
+                                            // 1. If date doesn't exist, safely render a placeholder string
+                                            if (!expense.date) return "N/A";
+                                            
+                                            // 2. Parse the saved string deterministically
+                                            const dateObj = new Date(expense.date);
+                                            
+                                            // 3. Return the formatted string
+                                            return dateObj.toLocaleDateString('en-US', {
+                                                year: 'numeric',
+                                                month: 'short',
+                                                day: 'numeric'
+                                            });
+                                        })()}
                                     </td>
 
                                     {/* 2. Description */}
                                     <td className="px-6 py-4 font-medium text-gray-900">
                                         {expense.description}
+                                    </td>
+
+                                    <td className="px-6 py-4 font-medium text-gray-900 capitalize">
+                                        {expense.category}
                                     </td>
 
                                     {/* 3. Type (Income vs Expense Badge) */}
@@ -296,6 +380,7 @@ import { ExpenseItem } from "./ExpenseItem";
                                             {expense.type}
                                         </span>
                                     </td>
+
 
                                     {/* 4. Amount */}
                                     <td className={`px-6 py-4 whitespace-nowrap font-semibold ${

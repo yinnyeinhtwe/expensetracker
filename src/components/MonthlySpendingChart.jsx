@@ -2,7 +2,7 @@ import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tool
 
 export default function MonthlySpendingChart({ data }) {
     return (
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm w-full mb-6">
+        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm w-full h-full flex flex-col mb-6">
             {/* Dynamic Card Header layout */}
             <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center gap-2">
@@ -12,9 +12,9 @@ export default function MonthlySpendingChart({ data }) {
                 <span className="text-xs font-bold text-gray-400 bg-gray-50 px-3 py-1 rounded-full uppercase">Last 6 Months</span>
             </div>
 
-            <div className="w-full h-64">
+            <div className="w-full h-78">
                 <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                    <AreaChart data={data} margin={{ top: 15, right: 10, left: 10, bottom: 0 }}>
                         <defs>
                             {/* Blue Gradient - Expenses */}
                             <linearGradient id="expenseGradient" x1="0" y1="0" x2="0" y2="1">

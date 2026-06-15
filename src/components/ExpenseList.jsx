@@ -8,6 +8,7 @@ import {
 } from "../slices/expenseSlice";
 import { ExpenseItem } from "./ExpenseItem";
 import MonthlySpendingChart from './MonthlySpendingChart';
+import { PieChart, Pie, ResponsiveContainer } from 'recharts';
 
 export function ExpenseList() {
 
@@ -64,46 +65,94 @@ export function ExpenseList() {
 
     })
 
-        // 1. SIMPLEST WAY TO GENERATE CHART DATA
-        // This will automatically adjust to show the last 6 months based on the current date
-        const chartData = useMemo(() => {
-            const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-            const current = new Date();
-            
-            // 1. Generate the last 6 months dynamically relative to today
-            const chartMap = Array.from({ length: 6 }, (_, i) => {
-                const d = new Date(current.getFullYear(), current.getMonth() - (5 - i), 1);
-                return {
-                    name: monthNames[d.getMonth()],
-                    monthIndex: d.getMonth(),
-                    year: d.getFullYear(),
-                    income: 0, //track income
-                    expense: 0 //track expense
-                };
-            });
-            console.log('CHART MAP', chartMap)
-            // 2. Process all entries into their respective buckets
-            expenses.forEach(item => {
-                if (item.date) {
-                    const expenseDate = new Date(item.date);
-                    const match = chartMap.find(m => m.monthIndex === expenseDate.getMonth() && m.year === expenseDate.getFullYear());
-                    
-                    if (match) {
-                        // Dynamically route the addition based on type
-                        if (item.type === 'expense') {
-                            match.expense += Number(item.amount || 0);
-                        } else if (item.type === 'income') {
-                            match.income += Number(item.amount || 0);
-                        }
+    // 1. SIMPLEST WAY TO GENERATE CHART DATA
+    // This will automatically adjust to show the last 6 months based on the current date
+    const chartData = useMemo(() => {
+        const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        const current = new Date();
+        
+        // 1. Generate the last 6 months dynamically relative to today
+        const chartMap = Array.from({ length: 6 }, (_, i) => {
+            const d = new Date(current.getFullYear(), current.getMonth() - (5 - i), 1);
+            return {
+                name: monthNames[d.getMonth()],
+                monthIndex: d.getMonth(),
+                year: d.getFullYear(),
+                income: 0, //track income
+                expense: 0 //track expense
+            };
+        });
+        console.log('CHART MAP', chartMap)
+        // 2. Process all entries into their respective buckets
+        expenses.forEach(item => {
+            if (item.date) {
+                const expenseDate = new Date(item.date);
+                const match = chartMap.find(m => m.monthIndex === expenseDate.getMonth() && m.year === expenseDate.getFullYear());
+                
+                if (match) {
+                    // Dynamically route the addition based on type
+                    if (item.type === 'expense') {
+                        match.expense += Number(item.amount || 0);
+                    } else if (item.type === 'income') {
+                        match.income += Number(item.amount || 0);
                     }
                 }
-            });
+            }
+        });
 
-            // 3. Clean up the internal calendar markers before sending the array to Recharts
-            return chartMap.map(({ name, expense, income }) => ({ name, expense, income }));
-        }, [expenses]);
+        // 3. Clean up the internal calendar markers before sending the array to Recharts
+        return chartMap.map(({ name, expense, income }) => ({ name, expense, income }));
+    }, [expenses]);
+    // console.log("cadata",chartData);
 
-    console.log("cadata",chartData);
+    //Chart for spending amount by category
+    const categoryData = useMemo(() => {
+        const totalExpenseAmount = expenses
+            .filter(item => item.type === "expense")
+            .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+
+        const categories = {
+            food: {name: "FOOD & DRINKS", amount: 0, color: "bg-blue-600", fill: "#2563eb"},
+            shopping: { name: "SHOPPING", amount: 0, color: "bg-emerald-500", fill: "#10b981" },
+            housing: { name: "HOUSING", amount: 0, color: "bg-orange-500", fill: "#f97316" },
+            others: { name: "OTHERS", amount: 0, color: "bg-slate-400", fill: "#94a3b8" }
+        }
+
+        expenses.forEach(item => {
+            if(item.type != "expense") return;
+
+            const dropdownValue = (item.category || "").toLowerCase();
+
+            switch(dropdownValue){
+                case "food":
+                    categories.food.amount += Number(item.amount || 0);
+                    break;
+
+                case "shopping":
+                    categories.shopping.amount += Number(item.amount || 0);
+                    break;
+
+                case "bills":
+                case "utilities":
+                    categories.housing.amount += Number(item.amount || 0);
+                    break;
+
+                case "entertainment":
+                case "transport":
+                case "other":
+                    categories.others.amount += Number(item.amount || 0);
+                    break;
+            }
+        });
+
+        return Object.values(categories).map((category) => {
+            const percentage = totalExpenseAmount > 0 
+                ? Math.round((category.amount / totalExpenseAmount) * 100)
+                : 0;
+            return {... category, value: percentage};
+        });
+    }, [expenses]);
+    
     const handleAddExpense = () => {
         if (!newExpense.description || newExpense.amount === "") {
             alert("Please enter a description and amount.");
@@ -189,7 +238,64 @@ export function ExpenseList() {
                 </div>
             </div>
 
-            <MonthlySpendingChart data={chartData} />
+            {/* Chart Display */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch mt-15">
+            
+                <MonthlySpendingChart data={chartData} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm h-full" />
+
+                {/* LEFT COLUMN: Category Breakdown UI (Takes 1/3 width)  */}
+                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between h-full">
+                    <div>
+                        {/* Visual Title Header Accent Block */}
+                        <div className="flex items-center gap-2 mb-6">
+                            <div className="w-1 h-5 bg-blue-600 rounded-full"></div>
+                            <h3 className="text-lg font-bold text-gray-800">Spending by Category</h3>
+                        </div> 
+
+                        {/* Dynamic Progress Tracking Bars List Container */}
+                        <div className="space-y-4 mb-6 max-h-60 overflow-y-auto pr-1">
+                            {categoryData.map((cat) => (
+                                <div key={cat.name} className="space-y-1.5">
+                                    <div className="flex justify-between text-xs font-bold tracking-wide">
+                                        <span className="text-gray-500">{cat.name}</span>
+                                        <span style={{ color: cat.fill }}>{cat.value}%</span>
+                                    </div>
+                                    {/* Background slider track track line */}
+                                    <div className="w-full bg-gray-50 h-2 rounded-full overflow-hidden">
+                                        {/* Colorful relative dynamic bar filler */}
+                                        <div 
+                                            className={`h-full rounded-full transition-all duration-500 ${cat.color}`} 
+                                            style={{ width: `${cat.value}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Floating Concentric Donut Pie Section */}
+                    <div className="w-full h-40 relative flex items-center justify-center">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie
+                                    data={categoryData}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={45}
+                                    outerRadius={60}
+                                    paddingAngle={3}
+                                    dataKey="value"
+                                    fill="fill" 
+                                />
+                            </PieChart>
+                        </ResponsiveContainer>
+                        <div className="absolute text-center pointer-events-none">
+                            <span className="text-[10px] font-bold tracking-wider text-gray-400 uppercase">Total</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
 
             {
                 balance < 0 && (
@@ -332,7 +438,8 @@ export function ExpenseList() {
             </div>
 
 
-            <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+            {/* 1. Parent Wrapper Layout Grid */}    
+            <div className="lg:col-span-2 overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
                 {filteredExpenses.length === 0 ? (
                     <div className="text-center text-gray-500 py-10 bg-gray-50">
                         No transactions found.
@@ -355,16 +462,11 @@ export function ExpenseList() {
                         <tbody className="divide-y divide-gray-200 border-t border-gray-200">
                             {filteredExpenses.map((expense) => (
                                 <tr key={expense.id} className="hover:bg-gray-50 transition-colors">
-                                    {/* 1. Date (Uses a fallback if date doesn't exist yet) */}
+                                    {/* 1. Date */}
                                     <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-600">
                                         {(() => {
-                                            // 1. If date doesn't exist, safely render a placeholder string
                                             if (!expense.date) return "N/A";
-                                            
-                                            // 2. Parse the saved string deterministically
                                             const dateObj = new Date(expense.date);
-                                            
-                                            // 3. Return the formatted string
                                             return dateObj.toLocaleDateString('en-US', {
                                                 year: 'numeric',
                                                 month: 'short',
@@ -378,11 +480,12 @@ export function ExpenseList() {
                                         {expense.description}
                                     </td>
 
+                                    {/* 3. Category */}
                                     <td className="px-6 py-4 font-medium text-gray-900 capitalize">
                                         {expense.category}
                                     </td>
 
-                                    {/* 3. Type (Income vs Expense Badge) */}
+                                    {/* 4. Type Badge */}
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span
                                             className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider ${
@@ -395,24 +498,20 @@ export function ExpenseList() {
                                         </span>
                                     </td>
 
-
-                                    {/* 4. Amount */}
+                                    {/* 5. Amount */}
                                     <td className={`px-6 py-4 whitespace-nowrap font-semibold ${
                                         expense.type === "income" ? "text-green-600" : "text-red-600"
                                     }`}>
                                         {expense.type === "income" ? "+" : "-"}${expense.amount}
                                     </td>
 
-                                    {/* 5. Action (Edit & Delete Buttons aligned horizontally) */}
+                                    {/* 6. Action */}
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center justify-center gap-4">
-                                            {/* Edit Button Container */}
                                             <ExpenseItem expense={expense} />
-
-                                            {/* Delete Button */}
                                             <button
                                                 onClick={() => handleDeleteExpense(expense.id)}
-                                                className="text-red-500 p-1 rounded  transition"
+                                                className="text-red-500 p-1 rounded transition"
                                                 title="Delete Transaction"
                                             >
                                                 <svg

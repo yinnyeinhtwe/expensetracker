@@ -12,7 +12,7 @@ export default function MonthlySpendingChart({ data }) {
                 <span className="text-xs font-bold text-gray-400 bg-gray-50 px-3 py-1 rounded-full uppercase">Last 6 Months</span>
             </div>
 
-            <div className="w-full h-78">
+            <div className="w-full h-95">
                 <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={data} margin={{ top: 15, right: 10, left: 10, bottom: 0 }}>
                         <defs>

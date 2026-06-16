@@ -130,6 +130,7 @@ export function ExpenseList() {
             const catKey = item.category.toLowerCase();
             
             // Skip salary if it accidentally got added as an expense
+            //test
             if (catKey === 'salary') return; 
 
             if (!counts[catKey]) {

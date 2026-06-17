@@ -5,7 +5,7 @@ const saveExpenses = localStorage.getItem("expenses");
 const expenseSlice = createSlice({
     name: "expense",
     initialState: {
-        expenses: saveExpenses? JSON.parse(saveExpenses): [{id: 1, description: "Salary", amount: 1000, type: "income", date: new Date().toLocaleDateString()}, {id: 2, description: "Rent", amount: 500, type: "expense", date: new Date().toLocaleDateString()}],
+        expenses: saveExpenses? JSON.parse(saveExpenses): [{id: 1, description: "Salary", amount: 1000, type: "income", date: "6/11/2026", category: "salary"}, {id: 2, description: "Rent", amount: 500, type: "expense", date: "6/11/2026", category: "other"}],
         // totalIncome: 0,
         searchTerm: "",
     },
@@ -16,7 +16,8 @@ const expenseSlice = createSlice({
                 description: action.payload.description,
                 amount: action.payload.amount,
                 type: action.payload.type,
-                date: new Date().toLocaleDateString(),
+                date: action.payload.date,
+                category: action.payload.category,
             };
             state.expenses.push(newExpense);
         },
@@ -27,12 +28,13 @@ const expenseSlice = createSlice({
         },
 
         editExpense: (state, action) => {
-            const {id, description, amount, type} = action.payload;
+            const {id, description, amount, type, category} = action.payload;
             const existingExpense = state.expenses.find((expense) => expense.id === id);
             if (existingExpense) {
                 existingExpense.description = description;
                 existingExpense.amount = amount;
                 existingExpense.type = type;
+                existingExpense.category = category;
             }
         },
 
@@ -48,8 +50,8 @@ const expenseSlice = createSlice({
 
         searchTransaction: (state, action) => {
             state.searchTerm = action.payload;
-        }
- 
+        },
+
     }
 });
 

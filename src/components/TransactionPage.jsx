@@ -29,12 +29,12 @@ export default function TransactionPage() {
   const filteredExpenses = expenses.filter((expense) => {
     const matchesSearch = expense.description
       .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+      .includes(searchTerm.toLowerCase()); //type something if this something matches keep it(True), if not throw it(False)
 
     const matchesFilter =
-      activeFilter === "all" || expense.type === activeFilter;
+      activeFilter === "all" || expense.type === activeFilter; //if filter is "all", look every transaction. if filter is "income", look only income transaction. same for "expense"
 
-    return matchesFilter && matchesSearch;
+    return matchesFilter && matchesSearch; //filter button is income and the searching transaction name must be income transaction to show transaction, one of them is false the transaction would not occur on the screen.
   });
 
   // Pagination Field
@@ -51,7 +51,7 @@ export default function TransactionPage() {
 
   //Calculate total number of pages
   const totalPages = Math.ceil(filteredExpenses.length / ITEMS_PER_PAGE);
-
+    
   const getPageNumbers = (current, total) => {
     const pages = [];
 

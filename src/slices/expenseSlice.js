@@ -38,15 +38,15 @@ const expenseSlice = createSlice({
             }
         },
 
-        // calculateTotalIncome: (state) => {
-        //     const income = state.expenses.filter((expense) => expense.type === "income");
-        //     let incomeTotal=0;
-        //     income.forEach(item => {
-        //         incomeTotal += item.amount;
-        //     });
-        //     state.totalIncome = incomeTotal;
-        //     // return totalIncome;
-        //  },
+        calculateTotalIncome: (state) => {
+            const income = state.expenses.filter((expense) => expense.type === "income");
+            let incomeTotal=0;
+            income.forEach(item => {
+                incomeTotal += item.amount;
+            });
+            state.totalIncome = incomeTotal;
+            // return totalIncome;
+         },
 
         searchTransaction: (state, action) => {
             state.searchTerm = action.payload;
@@ -54,6 +54,14 @@ const expenseSlice = createSlice({
 
     }
 });
+
+export const selectTotalIncome = (state) => state.expense.expenses.filter((item) => item.type === "income").reduce((total, item) => total + Number(item.amount), 0);
+export const selectTotalExpense = (state) => state.expense.expenses.filter((item) => item.type === "expense").reduce((total, item) => total + Number(item.amount), 0);
+export const selectTotalBalance = (state) => {
+    const income = selectTotalIncome(state);
+    const expense = selectTotalExpense(state);
+    return income-expense;
+}
 
 export const { addExpense, deleteExpense, editExpense, calculateTotalIncome, searchTransaction } = expenseSlice.actions;
 export default expenseSlice.reducer;

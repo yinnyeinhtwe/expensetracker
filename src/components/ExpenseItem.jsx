@@ -7,11 +7,12 @@ export function ExpenseItem({ expense }) {
     const [newName, setNewName] = useState(expense.description);
     const [newAmount, setNewAmount] = useState(expense.amount);
     const [newType, setNewType] = useState(expense.type);
+    const [newCategory, setNewCategory] = useState(expense.category);
 
     const dispatch = useDispatch();
 
     const handleEditExpense = (id) => {
-        dispatch(editExpense({id, description: newName, amount: newAmount, type: newType}));
+        dispatch(editExpense({id, description: newName, amount: newAmount, type: newType, category: newCategory}));
         setIsEdit(false);
     };
 
@@ -58,6 +59,25 @@ export function ExpenseItem({ expense }) {
                                 >
                                     <option value="expense">Expense</option>
                                     <option value="income">Income</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Type</label>
+                                <select
+                                    onChange={(e) => setNewCategory(e.target.value)}
+                                    value={newCategory}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-gray-800"
+                                >
+                                    <option value="" disabled>Select Category</option>
+                                    <option value="food">Food</option>
+                                    <option value="bills">Bills</option>
+                                    <option value="entertainment">Entertainment</option>
+                                    <option value="salary">Salary</option>
+                                    <option value="shopping">Shopping</option>
+                                    <option value="transport">Transport</option>
+                                    <option value="utilities">Utilities</option>
+                                    <option value="other">Other</option>
                                 </select>
                             </div>
                         </div>

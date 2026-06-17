@@ -10,7 +10,7 @@ import { ExpenseItem } from "./ExpenseItem";
 import MonthlySpendingChart from './MonthlySpendingChart';
 import { PieChart, Pie, ResponsiveContainer } from 'recharts';
 
-export function ExpenseList() {
+export default function Dashboard() {
 
     const dispatch = useDispatch();
     const expenses = useSelector((state) => state.expense.expenses);
@@ -236,7 +236,7 @@ export function ExpenseList() {
     }
 
     return (
-        <div className="max-w-6xl mx-auto p-6 bg-white rounded-xl my-8">
+        <div className="max-w-6xl">
             {/* Title */}
             <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4" data-purpose="header">
                 <div class="flex items-center gap-3">
@@ -499,6 +499,7 @@ export function ExpenseList() {
                             <table className="w-full text-left border-collapse text-sm text-gray-500">
                                 <thead className="bg-gray-100 text-sm font-semibold uppercase text-blue-700">
                                     <tr>
+                                        <th scope="col" className="px-6 py-4">No.</th>
                                         <th scope="col" className="px-6 py-4">Date</th>
                                         <th scope="col" className="px-6 py-4">Description</th>
                                         <th scope="col" className="px-6 py-4">Category</th>
@@ -512,6 +513,9 @@ export function ExpenseList() {
                                     {/* 💡 Loop through paginatedExpenses instead of filteredExpenses */}
                                     {paginatedExpenses.map((expense) => (
                                         <tr key={expense.id} className="hover:bg-gray-50 transition-colors">
+                                            <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-600">
+                                                {expense.id}
+                                            </td>
                                             <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-600">
                                                 {expense.date ? new Date(expense.date).toLocaleDateString('en-US', {
                                                     year: 'numeric', month: 'short', day: 'numeric'

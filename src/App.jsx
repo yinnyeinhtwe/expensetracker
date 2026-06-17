@@ -1,7 +1,12 @@
 import './App.css';
 import './index.css';
-import { ExpenseList } from './components/ExpenseList';
+import Dashboard from './components/Dashboard';
+import TransactionPage from './components/TransactionPage';
+import AnalyticsPage from './components/AnalyticsPage';
 import { useSelector } from 'react-redux';
+import SideBar from './components/SideBar';
+import { Routes, Route } from 'react-router-dom';
+ 
 // import { CounterList } from './components/CounterList';
 // import { MovieInput } from './components/MovieInput';
 // import { MovieList } from './components/MovieList'; 
@@ -13,10 +18,16 @@ function App() {
       {/* <CounterList /> */}
       {/* <MovieInput />
       <MovieList /> */}
-      <div>
+      <SideBar>
+        <Routes>
             {/* Pass the extracted array to your list component */}
-            <ExpenseList expenses={expenses} />
-        </div>
+              
+              <Route path="/" element={<Dashboard expense={expenses} />} />
+              <Route path="transactions" element={<TransactionPage />} />
+              <Route path="analytics" element={<AnalyticsPage />} />
+        </Routes>
+      </SideBar>
+
     </>
   );
 }

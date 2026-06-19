@@ -128,6 +128,9 @@ export default function TransactionPage() {
         <div class="flex items-center gap-3">
           <h1 class="text-4xl font-bold tracking-tight text-slate-800">
             Transaction<span class="text-blue-700"> Management</span>
+            <p class="mt-1 text-sm font-medium text-slate-400 uppercase tracking-widest">
+              Monitor and manage all financial movements across your accounts.
+            </p>
           </h1>
         </div>
       </header>

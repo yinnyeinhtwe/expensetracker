@@ -62,6 +62,13 @@ export const selectTotalBalance = (state) => {
     const expense = selectTotalExpense(state);
     return income-expense;
 }
+export const selectTotalSaving = (state) => {
+    const income = selectTotalIncome(state);
+    const saving = selectTotalBalance(state); 
+    const savingRate = (saving / income) * 100;
+
+    return Math.max(0, Math.round(savingRate * 10) / 10);
+}
 
 export const { addExpense, deleteExpense, editExpense, calculateTotalIncome, searchTransaction } = expenseSlice.actions;
 export default expenseSlice.reducer;

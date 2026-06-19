@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import { useEffect, useMemo } from "react";
-import { selectTotalBalance, selectTotalExpense, selectTotalIncome } from "../slices/expenseSlice";
+import { selectTotalBalance, selectTotalExpense, selectTotalIncome, selectTotalSaving } from "../slices/expenseSlice";
 import MonthlySpendingChart from "./MonthlySpendingChart";
 import TransactionList from "./TransactionList";
 import { PieChart, Pie, ResponsiveContainer } from "recharts";
@@ -21,6 +21,8 @@ export default function Dashboard() {
   const expense = useSelector(selectTotalExpense);
   
   const balance = useSelector(selectTotalBalance);
+
+  const savingRate = useSelector(selectTotalSaving);
 
 //   const recentTransaction = useMemo(() => {
 //     const fortyEightHourAgo = new Date();
@@ -115,7 +117,7 @@ export default function Dashboard() {
     const colorMap = {
       food: { color: "bg-blue-600", fill: "#2563eb" },
       bills: { color: "bg-orange-500", fill: "#f97316" },
-      entertainment: { color: "bg-purple-500", fill: "#a855f7" },
+      entertainment: { color: "bg-purple-500", fill: "#6404bd" },
       shopping: { color: "bg-emerald-500", fill: "#10b981" },
       transport: { color: "bg-amber-500", fill: "#f59e0b" },
       utilities: { color: "bg-cyan-500", fill: "#06b6d4" },
@@ -247,10 +249,10 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="w-full min-h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 border-t-3 border-t-red-500 shadow-lg rounded-lg font-semibold">
-          Total Expense
-          <div className="text-xl sm:text-2xl mt-2 text-red-500 font-bold">
-            ${expense}
+        <div className="w-full min-h-[100px] p-4 bg-white text-base md:text-lg text-gray-500 border border-gray-100 border-t-3 border-t-[#6404bd] shadow-lg rounded-lg font-semibold">
+          Saving Rate
+          <div className="text-xl sm:text-2xl mt-2 text-[#6404bd] font-bold">
+            {savingRate}%
           </div>
         </div>
       </div>

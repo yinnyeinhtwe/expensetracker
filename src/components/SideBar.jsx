@@ -49,9 +49,27 @@ export default function SideBar({ children }) {
                                     : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
                             }`}
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                                <path fillRule="evenodd" d="M1 4h14v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2zm2 2h10v8H3z"/>
-                            </svg>
+                            <svg 
+                                    className="w-4 h-4"
+                                    fill="currentColor"
+                                    version="1.1" 
+                                    id="Filled_Icons" 
+                                    xmlns="http://www.w3.org/2000/svg" 
+                                    xmlns:xlink="http://www.w3.org/1999/xlink" 
+                                    x="0px" 
+                                    y="0px" 
+                                    viewBox="0 0 24 24" 
+                                    enable-background="new 0 0 24 24" 
+                                    xml:space="preserve"
+                                >
+                                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                    <g id="SVGRepo_iconCarrier"> 
+                                        <g id="Transaction-Filled"> 
+                                            <path d="M14,11V8H1V4h13V1l7,5L14,11z M3,18l7,5v-3h13v-4H10v-3L3,18z"></path> 
+                                        </g> 
+                                    </g>
+                                </svg>                           
                             Transactions
                         </NavLink>
 
@@ -64,9 +82,18 @@ export default function SideBar({ children }) {
                                     : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
                             }`}
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M4 11H2v3h2zm5-4H7v7h2zm5-5v12h-2V2z"/>
-                            </svg>
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                            <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+                            <g id="SVGRepo_iconCarrier"> 
+                                {/* All fill colors changed to currentColor to react to active text states */}
+                                <path d="M2 1C1.44772 1 1 1.44772 1 2V21C1 22.1046 1.89543 23 3 23H22C22.5523 23 23 22.5523 23 22C23 21.4477 22.5523 21 22 21L4 21C3.44772 21 3 20.5523 3 20V2C3 1.44772 2.55228 1 2 1Z" fill="currentColor"></path> 
+                                <path d="M6 14C6 13.4477 6.44771 13 7 13C7.55229 13 8 13.4477 8 14V17C8 17.5523 7.55229 18 7 18C6.44771 18 6 17.5523 6 17V14Z" fill="currentColor"></path> 
+                                <path d="M11 10C10.4477 10 10 10.4477 10 11V17C10 17.5523 10.4477 18 11 18C11.5523 18 12 17.5523 12 17V11C12 10.4477 11.5523 10 11 10Z" fill="currentColor"></path> 
+                                <path d="M14 8C14 7.44771 14.4477 7 15 7C15.5523 7 16 7.44772 16 8V17C16 17.5523 15.5523 18 15 18C14.4477 18 14 17.5523 14 17V8Z" fill="currentColor"></path> 
+                                <path d="M19 4C18.4477 4 18 4.44772 18 5V17C18 17.5523 18.4477 18 19 18C19.5523 18 20 17.5523 20 17V5C20 4.44772 19.5523 4 19 4Z" fill="currentColor"></path> 
+                            </g>
+                        </svg>                            
                             Analytics
                         </NavLink>
                     </nav>

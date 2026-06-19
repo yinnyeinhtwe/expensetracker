@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect, useMemo } from "react";
 import { ExpenseItem } from "./ExpenseItem";
+import TransactionList from "./TransactionList";
 
 import {
   addExpense,

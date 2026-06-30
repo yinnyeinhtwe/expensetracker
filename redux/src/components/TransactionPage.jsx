@@ -2,6 +2,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect, useMemo } from "react";
 import { ExpenseItem } from "./ExpenseItem";
 
+import { exportToExcel } from "../util/exportExcel";
+
 import {
   addExpense,
   searchTransaction,
@@ -29,12 +31,12 @@ export default function TransactionPage() {
   const filteredExpenses = expenses.filter((expense) => {
     const matchesSearch = expense.description
       .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+      .includes(searchTerm.toLowerCase()); //type something if this something matches keep it(True), if not throw it(False)
 
     const matchesFilter =
-      activeFilter === "all" || expense.type === activeFilter;
+      activeFilter === "all" || expense.type === activeFilter; //if filter is "all", look every transaction. if filter is "income", look only income transaction. same for "expense"
 
-    return matchesFilter && matchesSearch;
+    return matchesFilter && matchesSearch; //filter button is income and the searching transaction name must be income transaction to show transaction, one of them is false the transaction would not occur on the screen.
   });
 
   // Pagination Field
@@ -127,6 +129,9 @@ export default function TransactionPage() {
         <div class="flex items-center gap-3">
           <h1 class="text-4xl font-bold tracking-tight text-slate-800">
             Transaction<span class="text-blue-700"> Management</span>
+            <p class="mt-1 text-sm font-medium text-slate-400 uppercase tracking-widest">
+              Monitor and manage all financial movements across your accounts.
+            </p>
           </h1>
         </div>
       </header>
@@ -234,7 +239,34 @@ export default function TransactionPage() {
           onChange={handleSearch}
           className="px-4 py-2 w-[300px] ml-auto border border-gray-300 rounded-lg focus:outline-none text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
         />
+        <button
+            onClick={() => exportToExcel(filteredExpenses)} // Pass your array state straight into the function
+            className="flex items-center gap-2 bg-emerald-600 text-white font-semibold py-2 px-4 rounded-xl text-sm transition shadow-sm"
+            title="Export to Excel Spreadsheet"
+        >
+            {/* Excel Download Icon SVG with React-safe CamelCase Attributes */}
+            <svg 
+                viewBox="0 0 24 24" 
+                fill="currentColor" 
+                className="w-5 h-5 text-white" 
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+                <g id="SVGRepo_iconCarrier"> 
+                    <path 
+                        fillRule="evenodd" 
+                        clipRule="evenodd" 
+                        d="M2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C22 4.92893 22 7.28595 22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12ZM12 6.25C12.4142 6.25 12.75 6.58579 12.75 7V12.1893L14.4697 10.4697C14.7626 10.1768 15.2374 10.1768 15.5303 10.4697C15.8232 10.7626 15.8232 11.2374 15.5303 11.5303L12.5303 14.5303C12.3897 14.671 12.1989 14.75 12 14.75C11.8011 14.75 11.6103 14.671 11.4697 14.5303L8.46967 11.5303C8.17678 11.2374 8.17678 10.7626 8.46967 10.4697C8.76256 10.1768 9.23744 10.1768 9.53033 10.4697L11.25 12.1893V7C11.25 6.58579 11.5858 6.25 12 6.25ZM8 16.25C7.58579 16.25 7.25 16.5858 7.25 17C7.25 17.4142 7.58579 17.75 8 17.75H16C16.4142 17.75 16.75 17.4142 16.75 17C16.75 16.5858 16.4142 16.25 16 16.25H8Z" 
+                    /> 
+                </g>
+            </svg>
+            Export Excel
+        </button>
+
       </div>
+
+    
 
       {/* Filter Buttons */}
       <div className="flex gap-2 mb-6">
